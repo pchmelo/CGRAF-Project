@@ -1,10 +1,10 @@
 # CG 2024/2025
 
-## Group T0xG0y
+## Group T03G02
 | Name             | Number    | E-Mail             |
 | ---------------- | --------- | ------------------ |
-| John Doe         | 201901010 | ...                |
-| Jane Doe         | 201901011 | ...                |
+| Gabriel Carvalho        | 202208939 | up202208939@up.pt                |
+| Jane Doe         | 202207564 | up202207564@up.pt                |
 
 ----
 
