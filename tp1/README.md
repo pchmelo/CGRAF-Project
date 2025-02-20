@@ -20,10 +20,10 @@
 
 #### Small Triangle
 
-![Small Triangle](screenshots/CG-t03g02-tp1-1.png)
+![Small Triangle](screenshots/CG-t03g02-tp1-1a.png)
 
 ****
 
 #### Big Triangle
 
-![Big Triangle](screenshots/CG-t03g02-tp1-2.png)
+![Big Triangle](screenshots/CG-t03g02-tp1-1b.png)
