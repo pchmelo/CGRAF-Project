@@ -13,3 +13,11 @@
 #### Tangram side by side comparison:
 
 ![Tangram Comparison](screenshots/CG-t03g02-tp2-1.png)
+
+### Exercise 2
+
+- In exercise 2, we consolidated our knowledge of creating front and backfacing shapes, as well as transformations, by creating a unit cube and applying to it the requested tranformations
+
+#### Tangram and unit cube after requested transformations:
+
+![Cube and Tangram](screenshots/CG-t03g02-tp2-2.png)
