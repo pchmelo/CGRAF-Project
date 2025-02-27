@@ -3,8 +3,8 @@
 ## Group T03G02
 | Name             | Number    | E-Mail             |
 | ---------------- | --------- | ------------------ |
-| Gabriel Carvalho        | 202208939 | up202208939@up.pt                |
-| Jane Doe         | 202207564 | up202207564@up.pt                |
+| Gabriel Carvalho | 202208939 | up202208939@up.pt  |
+| Vasco Melo       | 202207564 | up202207564@up.pt  |
 
 ----
 
