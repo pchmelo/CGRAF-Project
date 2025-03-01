@@ -21,3 +21,13 @@
 #### Tangram and unit cube after requested transformations:
 
 ![Cube and Tangram](screenshots/CG-t03g02-tp2-2.png)
+
+### Exercise 3
+
+- In exercise 3, we learned that it is also possible to create a complex shape by using a repeating smaller shape within it and apply the necessary transformations until the complex shape is created, instead of having to place and connect every single vertex of the complex shape
+
+- We also noticed that lighting seems to affect a shape differently when its made of smaller shapes instead of a singular complex shape
+
+#### Tangram and unit cube quad
+
+![Cube Quad and Tangram](screenshots/CG-t03g02-tp2-3.png)
