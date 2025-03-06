@@ -5,6 +5,7 @@ import { MyPlane } from "./MyPlane.js";
 
 import { MyTangram } from "./MyTangram.js";
 import { MyUnitCube } from "./MyUnitCube.js";
+import { MyPrism } from "./MyPrism.js";
 
 /**
 * MyScene
@@ -38,6 +39,7 @@ export class MyScene extends CGFscene {
 
         this.unitCube = new MyUnitCube(this);
         this.tangram = new MyTangram(this);
+        this.prism = new MyPrism(this, 8, 20);
 
         // -------------------------------------------
         
@@ -55,8 +57,8 @@ export class MyScene extends CGFscene {
         this.scaleFactor = 1.0;
 
         this.displayObjects = false;
-        this.displayUnitCube = true;
-        this.displayTangram = true;
+        this.displayUnitCube = false;
+        this.displayTangram = false;
 
         this.selectedCube = 1;
 
@@ -64,10 +66,10 @@ export class MyScene extends CGFscene {
     initLights() {
         this.setGlobalAmbientLight(0.3, 0.3, 0.3, 1.0);
 
-        this.lights[0].setPosition(2.0, 2.0, -1.0, 1.0);
+        this.lights[0].setPosition(2.0, 3.0, 3.0, 1.0);
         this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
         this.lights[0].setSpecular(1.0, 1.0, 1.0, 1.0);
-        this.lights[0].disable();
+        this.lights[0].enable();
         this.lights[0].setVisible(true);
         this.lights[0].update();
 
@@ -241,6 +243,11 @@ export class MyScene extends CGFscene {
         this.translate(4.5, 0.01, 4.5);
         this.rotate(-Math.PI / 2, 1, 0, 0);
         if (this.displayTangram) this.tangram.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+        this.cubeMaterials[this.selectedCube].apply();
+        this.prism.display();
         this.popMatrix();
 
         // ---- END Primitive drawing section
