@@ -25,3 +25,11 @@
 #### Octogonal Prism
 
 ![Prism](screenshots/cg-t03g02-tp3-3.png)
+
+### Exercise 3
+
+- In exercise 3, we noted how normals are extremelly important in dictating how a surface reacts to light, being capable of making a edged surface appear smooth.
+
+#### Smoth Surface Prism (Cylinder)
+
+![Cylinder](screenshots/cg-t03g02-tp3-4.png)

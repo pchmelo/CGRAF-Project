@@ -23,6 +23,8 @@ export class MyInterface extends CGFinterface {
         this.gui.add(this.scene, 'displayObjects').name("Display objects");
         this.gui.add(this.scene, 'displayUnitCube').name("Display cube");
         this.gui.add(this.scene, 'displayTangram').name("Display tangram");
+        this.gui.add(this.scene, 'displayPrism').name("Display prism");
+        this.gui.add(this.scene, 'displayCylinder').name("Display cylinder");
 
         // example of a dropdown that has numeric ID's associated, 
         // and an event handler to be called when the selection changes
