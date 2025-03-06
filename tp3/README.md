@@ -17,3 +17,11 @@
 #### Diamond with custom material:
 
 ![Diamond custom material](screenshots/cg-t03g02-tp3-2.png)
+
+### Exercise 2
+
+- In exercise 2, we learned how to create complex shapes with multiple variating vertexes, using `for` loops and `variables` instead of fixed coordinates.
+
+#### Octogonal Prism
+
+![Prism](screenshots/cg-t03g02-tp3-2.pn)
