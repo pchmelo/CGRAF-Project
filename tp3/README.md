@@ -24,4 +24,4 @@
 
 #### Octogonal Prism
 
-![Prism](screenshots/cg-t03g02-tp3-2.pn)
+![Prism](screenshots/cg-t03g02-tp3-3.png)
