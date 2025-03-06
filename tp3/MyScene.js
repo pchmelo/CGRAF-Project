@@ -6,6 +6,7 @@ import { MyPlane } from "./MyPlane.js";
 import { MyTangram } from "./MyTangram.js";
 import { MyUnitCube } from "./MyUnitCube.js";
 import { MyPrism } from "./MyPrism.js";
+import { MyCylinder } from "./MyCylinder.js";
 
 /**
 * MyScene
@@ -40,6 +41,7 @@ export class MyScene extends CGFscene {
         this.unitCube = new MyUnitCube(this);
         this.tangram = new MyTangram(this);
         this.prism = new MyPrism(this, 8, 20);
+        this.cylinder = new MyCylinder(this, 8, 20);
 
         // -------------------------------------------
         
@@ -59,6 +61,8 @@ export class MyScene extends CGFscene {
         this.displayObjects = false;
         this.displayUnitCube = false;
         this.displayTangram = false;
+        this.displayPrism = false;
+        this.displayCylinder = true;
 
         this.selectedCube = 1;
 
@@ -246,8 +250,25 @@ export class MyScene extends CGFscene {
         this.popMatrix();
 
         this.pushMatrix();
+
+        if (this.displayNormals)
+            this.prism.enableNormalViz();
+        else
+            this.prism.disableNormalViz();
+
         this.cubeMaterials[this.selectedCube].apply();
-        this.prism.display();
+        if (this.displayPrism) this.prism.display();
+        this.popMatrix();
+
+        this.pushMatrix();
+
+        if (this.displayNormals)
+            this.cylinder.enableNormalViz();
+        else
+            this.cylinder.disableNormalViz();
+
+        this.cubeMaterials[this.selectedCube].apply();
+        if (this.displayCylinder) this.cylinder.display();
         this.popMatrix();
 
         // ---- END Primitive drawing section
