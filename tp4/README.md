@@ -16,3 +16,11 @@
 #### Tangram with textures:
 
 ![Texture Tangram](screenshots/cg-t03g02-tp4-1.png)
+
+### Exercise 2
+
+- In exercise 2, we learned how different texture parameters influence how a colour is sellected for each pixel
+
+#### Dirt Block:
+
+![Dirt Block](screenshots/cg-t03g02-tp4-2.png)
