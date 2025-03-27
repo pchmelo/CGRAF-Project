@@ -30,8 +30,8 @@ export class MyTriangleBig extends CGFobject {
 
         this.texCoords = [
             0, 0,
-            1, 0,
-            0.5, 0.5
+            0.5, 0.5,
+            1, 0
         ];
 
         //The defined indices (and corresponding vertices)
@@ -43,9 +43,9 @@ export class MyTriangleBig extends CGFobject {
 
     changeColour() {
         this.texCoords = [
-            1, 0,
             1, 1,
-            0.5, 0.5
+            0.5, 0.5,
+            1, 0
         ];
         
         this.updateTexCoordsGLBuffers();
