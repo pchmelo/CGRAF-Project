@@ -79,8 +79,8 @@ export class MyScene extends CGFscene {
         //---------------------------------------------------------------------------
 
         this.displayQuad = false;
-        this.displayTangram = false;
-        this.displayGrassBlock = true;
+        this.displayTangram = true;
+        this.displayGrassBlock = false;
 
         this.nearestTexture = true;
 
