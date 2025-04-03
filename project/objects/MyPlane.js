@@ -1,4 +1,4 @@
-import {CGFobject} from '../../lib/CGF.js';
+import {CGFobject, CGFappearance} from '../../lib/CGF.js';
 /**
 * MyPlane
 * @constructor
@@ -23,26 +23,45 @@ export class MyPlane extends CGFobject {
 		this.q = (this.maxS - this.minS) / this.nrDivs;
 		this.w = (this.maxT - this.minT) / this.nrDivs;
 		this.initBuffers();
+		this.initMaterials(scene);
 	}
+
+	initMaterials(scene) {
+		this.material = new CGFappearance(this.scene);
+		this.material.setAmbient(1, 1, 1, 1);
+		this.material.setDiffuse(0.9, 0.9, 0.9, 1);
+		this.material.setSpecular(0.1, 0.1, 0.1, 1);
+		this.material.setShininess(10.0);
+		this.material.setTexture(scene.grassTexture);
+		this.material.setTextureWrap('REPEAT', 'REPEAT');
+	}
+
 	initBuffers() {
 		// Generate vertices, normals, and texCoords
 		this.vertices = [];
 		this.normals = [];
 		this.texCoords = [];
+		const textureScale = 4; // Factor to scale the texture coordinates
+	
 		var yCoord = 0.5;
 		for (var j = 0; j <= this.nrDivs; j++) {
 			var xCoord = -0.5;
 			for (var i = 0; i <= this.nrDivs; i++) {
 				this.vertices.push(xCoord, yCoord, 0);
 				this.normals.push(0, 0, 1);
-				this.texCoords.push(this.minS + i * this.q, this.minT + j * this.w);
+				// Repeating texture to avoid stretching
+				this.texCoords.push(
+					(this.minS + i * this.q) * textureScale,
+					(this.minT + j * this.w) * textureScale
+				);
 				xCoord += this.patchLength;
 			}
 			yCoord -= this.patchLength;
 		}
+	
 		// Generating indices
 		this.indices = [];
-
+	
 		var ind = 0;
 		for (var j = 0; j < this.nrDivs; j++) {
 			for (var i = 0; i <= this.nrDivs; i++) {
@@ -57,6 +76,11 @@ export class MyPlane extends CGFobject {
 		}
 		this.primitiveType = this.scene.gl.TRIANGLE_STRIP;
 		this.initGLBuffers();
+	}
+
+	display() {
+		this.material.apply();
+		super.display();
 	}
 
 	setFillMode() { 
