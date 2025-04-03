@@ -30,6 +30,7 @@ export class MyScene extends CGFscene {
 
     // Initialize textures -----------------------------------------
     this.earthTexture = new CGFtexture(this, "textures/earth.jpg");
+    this.grassTexture = new CGFtexture(this, "textures/grass.jpg");
     // -------------------------------------------------------------
 
     //Initialize scene objects -------------------------------------
@@ -98,19 +99,19 @@ export class MyScene extends CGFscene {
 
     this.setDefaultAppearance();
 
-    // Plane ----------------------------------------
+    // Plane -------------------------------------------------------
     this.pushMatrix();
-    this.scale(400, 1, 400);
+    this.scale(200, 1, 200);
     this.rotate(-Math.PI / 2, 1, 0, 0);
     this.plane.display();
     this.popMatrix();
-    // ----------------------------------------------
+    // -------------------------------------------------------------
 
-    // Sphere ---------------------------------------
+    // Sphere ------------------------------------------------------
     this.pushMatrix();
     this.translate(0, 20, 0);
     this.sphere.display();
     this.popMatrix();
-    // ----------------------------------------------
+    // -------------------------------------------------------------
   }
 }
