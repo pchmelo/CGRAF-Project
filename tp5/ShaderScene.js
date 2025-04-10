@@ -200,7 +200,7 @@ export class ShaderScene extends CGFscene {
 			// passing timeFactor to shaders
 			this.testShaders[6].setUniformsValues({ timeFactor: t / 100 % 100 });
 			this.testShaders[9].setUniformsValues({ timeFactor: t / 100 % 100 });
-			this.testShaders[11].setUniformsValues({ timeFactor: t / 200 % 100});
+			this.testShaders[11].setUniformsValues({ timeFactor: t / 100 % 100});
 	}
 
 	// main display function

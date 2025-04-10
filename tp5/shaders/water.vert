@@ -14,8 +14,8 @@ varying vec2 vTextureCoord;
 
 void main() {
     // Wave coordinates for animation
-    float waveX = sin(timeFactor + aVertexPosition.x) * 0.02;
-    float waveY = cos(timeFactor + aVertexPosition.y) * 0.02;
+    float waveX = sin((timeFactor * 0.5) + aVertexPosition.x) * 0.02;
+    float waveY = cos((timeFactor * 0.5) + aVertexPosition.y) * 0.02;
     
     // Displacement for wave effect
     vec2 displacedTexCoord = aTextureCoord + vec2(waveX, waveY);
