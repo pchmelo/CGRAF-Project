@@ -6,12 +6,14 @@ import { CGFobject, CGFappearance } from '../../lib/CGF.js';
  * @param scene - Reference to MyScene object
  * @param slices - Number of divisions around the Y axis
  * @param stacks - Number of layers from the equator to each pole
+ * @param inverted - Whether the sphere should be inverted
  */
 export class MySphere extends CGFobject {
-    constructor(scene, slices, stacks) {
+    constructor(scene, slices, stacks, inverted = false) {
         super(scene);
         this.slices = slices;
         this.stacks = stacks;
+        this.inverted = inverted;
         this.initMaterials(scene);
         this.initBuffers();
     }
@@ -51,8 +53,14 @@ export class MySphere extends CGFobject {
                 const z = cosTheta * sinPhi;
 
                 this.vertices.push(x, y, z);
-                this.normals.push(x, y, z); // Normals are the same as the vertex positions for a sphere
-                this.texCoords.push((1 - slice / this.slices), (1 - stack / (2 * this.stacks)));
+
+                if (this.inverted) {
+                    this.normals.push(-x, -y, -z);
+                } else {
+                    this.normals.push(x, y, z);
+                }
+
+                this.texCoords.push(1 - slice / this.slices, 1 - stack / (2 * this.stacks));
             }
         }
 
@@ -62,14 +70,10 @@ export class MySphere extends CGFobject {
                 const first = stack * (this.slices + 1) + slice;
                 const second = first + this.slices + 1;
 
-                if (stack === 0) {
-                    // North pole triangles
-                    this.indices.push(first, second, second + 1);
-                } else if (stack === 2 * this.stacks - 1) {
-                    // South pole triangles
-                    this.indices.push(first, second + 1, first + 1);
+                if (this.inverted) {
+                    this.indices.push(first, second + 1, second);
+                    this.indices.push(first, first + 1, second + 1);
                 } else {
-                    // Quadrilaterals
                     this.indices.push(first, second, second + 1);
                     this.indices.push(first, second + 1, first + 1);
                 }
@@ -81,10 +85,10 @@ export class MySphere extends CGFobject {
     }
 
     display() {
-        this.material.apply();
-        this.scene.pushMatrix();
-        this.scene.scale(20, 20, 20);
+        if (!(this.inverted)) {
+            this.material.apply();
+        }
+        
         super.display();
-        this.scene.popMatrix();
     }
 }

@@ -28,9 +28,7 @@ export class MyPlane extends CGFobject {
 
 	initMaterials(scene) {
 		this.material = new CGFappearance(this.scene);
-		this.material.setAmbient(1, 1, 1, 1);
-		this.material.setDiffuse(0.9, 0.9, 0.9, 1);
-		this.material.setSpecular(0.1, 0.1, 0.1, 1);
+		this.material.setEmission(0.5, 0.5, 0.5, 1);
 		this.material.setShininess(10.0);
 		this.material.setTexture(scene.grassTexture);
 		this.material.setTextureWrap('REPEAT', 'REPEAT');
@@ -41,7 +39,7 @@ export class MyPlane extends CGFobject {
 		this.vertices = [];
 		this.normals = [];
 		this.texCoords = [];
-		const textureScale = 4; // Factor to scale the texture coordinates
+		const textureScale = 3; // Factor to scale the texture coordinates
 	
 		var yCoord = 0.5;
 		for (var j = 0; j <= this.nrDivs; j++) {
@@ -49,11 +47,13 @@ export class MyPlane extends CGFobject {
 			for (var i = 0; i <= this.nrDivs; i++) {
 				this.vertices.push(xCoord, yCoord, 0);
 				this.normals.push(0, 0, 1);
+
 				// Repeating texture to avoid stretching
 				this.texCoords.push(
 					(this.minS + i * this.q) * textureScale,
 					(this.minT + j * this.w) * textureScale
 				);
+				
 				xCoord += this.patchLength;
 			}
 			yCoord -= this.patchLength;
@@ -93,5 +93,3 @@ export class MyPlane extends CGFobject {
 	};
 
 }
-
-
