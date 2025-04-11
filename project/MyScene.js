@@ -1,6 +1,7 @@
 import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./objects/MyPlane.js";
 import { MySphere } from "./objects/MySphere.js";
+import { MyPanorama } from "./objects/MyPanorama.js";
 
 /**
  * MyScene
@@ -31,6 +32,7 @@ export class MyScene extends CGFscene {
     // Initialize textures -----------------------------------------
     this.earthTexture = new CGFtexture(this, "textures/earth.jpg");
     this.grassTexture = new CGFtexture(this, "textures/grass.jpg");
+    this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
     // -------------------------------------------------------------
 
     //Initialize scene objects -------------------------------------
@@ -38,23 +40,33 @@ export class MyScene extends CGFscene {
     this.plane = new MyPlane(this, 64);
 
     this.sphere = new MySphere(this, 32, 32);
+    this.panorama = new MyPanorama(this, this.panoramaTexture);
+    // -------------------------------------------------------------
+
+    // Auxiliary variables -----------------------------------------
+    this.displayAxis = false;
+    this.displayEarth = false;
+    this.displayPlane = true;
     // -------------------------------------------------------------
   }
+  
+  initCameras() {
+    this.camera = new CGFcamera(
+      1,  // field of view (fov)
+      0.1,
+      1000,
+      vec3.fromValues(10, 10, 10),
+      vec3.fromValues(0, 0, 0)
+    );
+  }
+
   initLights() {
-    this.lights[0].setPosition(200, 200, 200, 1);
+    this.lights[0].setPosition(this.camera.position[0], this.camera.position[1], this.camera.position[2], 1);
     this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
     this.lights[0].enable();
     this.lights[0].update();
   }
-  initCameras() {
-    this.camera = new CGFcamera(
-      0.4,
-      0.1,
-      1000,
-      vec3.fromValues(200, 200, 200),
-      vec3.fromValues(0, 0, 0)
-    );
-  }
+
   checkKeys() {
     var text = "Keys pressed: ";
     var keysPressed = false;
@@ -95,22 +107,35 @@ export class MyScene extends CGFscene {
     this.applyViewMatrix();
 
     // Draw axis
-    this.axis.display();
+    if (this.displayAxis) this.axis.display();
 
     this.setDefaultAppearance();
 
     // Plane -------------------------------------------------------
-    this.pushMatrix();
-    this.scale(200, 1, 200);
-    this.rotate(-Math.PI / 2, 1, 0, 0);
-    this.plane.display();
-    this.popMatrix();
+    if (this.displayPlane) {
+      this.pushMatrix();
+      this.scale(400, 1, 400);
+      this.translate(0, -20, 0);
+      this.rotate(-Math.PI / 2, 1, 0, 0);
+      this.plane.display();
+      this.popMatrix();
+    }
     // -------------------------------------------------------------
 
     // Sphere ------------------------------------------------------
+    if (this.displayEarth) {
+      this.pushMatrix();
+      this.translate(0, 20, 0);
+      this.scale(20, 20, 20);
+      this.sphere.display();
+      this.popMatrix();
+    }
+    // -------------------------------------------------------------
+
+    // Panorama ----------------------------------------------------
     this.pushMatrix();
-    this.translate(0, 20, 0);
-    this.sphere.display();
+    this.translate(0, -50, 0);
+    this.panorama.display();
     this.popMatrix();
     // -------------------------------------------------------------
   }
