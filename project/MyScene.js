@@ -2,6 +2,7 @@ import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
 import { MyPlane } from "./objects/MyPlane.js";
 import { MySphere } from "./objects/MySphere.js";
 import { MyPanorama } from "./objects/MyPanorama.js";
+import { MyBuilding } from "./objects/firefighters/MyBuilding.js";
 
 /**
  * MyScene
@@ -27,12 +28,19 @@ export class MyScene extends CGFscene {
 
     this.enableTextures(true);
 
+    // Enable blending for transparent textures
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+
     this.setUpdatePeriod(50);
 
     // Initialize textures -----------------------------------------
     this.earthTexture = new CGFtexture(this, "textures/earth.jpg");
     this.grassTexture = new CGFtexture(this, "textures/grass.jpg");
     this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
+    this.windowTexture = new CGFtexture(this, "textures/window.jpg");
+    this.signTexture = new CGFtexture(this, "textures/sign.png");
+    this.helipadTexture = new CGFtexture(this, "textures/helipad.png");
     // -------------------------------------------------------------
 
     //Initialize scene objects -------------------------------------
@@ -41,12 +49,16 @@ export class MyScene extends CGFscene {
 
     this.sphere = new MySphere(this, 32, 32);
     this.panorama = new MyPanorama(this, this.panoramaTexture);
+
+    this.building = new MyBuilding(this, 60, 4, 3, this.windowTexture, [0.5, 0.5, 0.5]);
     // -------------------------------------------------------------
 
     // Auxiliary variables -----------------------------------------
     this.displayAxis = false;
     this.displayEarth = false;
     this.displayPlane = true;
+    this.displayPanorama = true;
+    this.displayBuilding = true;
     // -------------------------------------------------------------
   }
   
@@ -61,7 +73,7 @@ export class MyScene extends CGFscene {
   }
 
   initLights() {
-    this.lights[0].setPosition(this.camera.position[0], this.camera.position[1], this.camera.position[2], 1);
+    this.lights[0].setPosition(60, 60, -30, 1);
     this.lights[0].setDiffuse(1.0, 1.0, 1.0, 1.0);
     this.lights[0].enable();
     this.lights[0].update();
@@ -133,10 +145,21 @@ export class MyScene extends CGFscene {
     // -------------------------------------------------------------
 
     // Panorama ----------------------------------------------------
-    this.pushMatrix();
-    this.translate(0, -50, 0);
-    this.panorama.display();
-    this.popMatrix();
+    if (this.displayPanorama) {
+      this.pushMatrix();
+      this.translate(0, -50, 0);
+      this.panorama.display();
+      this.popMatrix();
+    }
+    // -------------------------------------------------------------
+
+    // Building ----------------------------------------------------
+    if (this.displayBuilding) {
+      this.pushMatrix();
+      this.translate(-20, -20, -100);
+      this.building.display();
+      this.popMatrix();
+    }
     // -------------------------------------------------------------
   }
 }

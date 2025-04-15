@@ -10,7 +10,6 @@ import { MySphere } from './MySphere.js';
 export class MyPanorama extends CGFobject {
     constructor(scene, panorama) {
         super(scene);
-        this.panoram = panorama;
         this.initShapes();
         this.initMaterials(panorama);
     }
