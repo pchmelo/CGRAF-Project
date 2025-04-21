@@ -25,7 +25,7 @@ export class MyModule extends CGFobject {
         this.wallColor = wallColor;
         this.isCenter = isCenter;
 
-        this.floorHeight = 20.0; // Fixed height for each floor
+        this.floorHeight = 15.0; // Fixed height for each floor
         this.unitCube = new MyUnitCubeQuad(this.scene);
         this.initMaterials();
         this.initComponents();

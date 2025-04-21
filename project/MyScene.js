@@ -3,6 +3,7 @@ import { MyPlane } from "./objects/MyPlane.js";
 import { MySphere } from "./objects/MySphere.js";
 import { MyPanorama } from "./objects/MyPanorama.js";
 import { MyBuilding } from "./objects/firefighters/MyBuilding.js";
+import { MyForest } from "./objects/forest/MyForest.js";
 
 /**
  * MyScene
@@ -41,6 +42,8 @@ export class MyScene extends CGFscene {
     this.windowTexture = new CGFtexture(this, "textures/window.jpg");
     this.signTexture = new CGFtexture(this, "textures/sign.png");
     this.helipadTexture = new CGFtexture(this, "textures/helipad.png");
+    this.crownTexture = new CGFtexture(this, "textures/leaves.jpg");
+    this.trunkTexture = new CGFtexture(this, "textures/trunk.jpg");
     // -------------------------------------------------------------
 
     //Initialize scene objects -------------------------------------
@@ -50,7 +53,8 @@ export class MyScene extends CGFscene {
     this.sphere = new MySphere(this, 32, 32);
     this.panorama = new MyPanorama(this, this.panoramaTexture);
 
-    this.building = new MyBuilding(this, 60, 4, 3, this.windowTexture, [0.5, 0.5, 0.5]);
+    this.building = new MyBuilding(this, 50, 4, 3, this.windowTexture, [0.5, 0.5, 0.5]);
+    this.forest = new MyForest(this, 7, 10, 200, 100);
     // -------------------------------------------------------------
 
     // Auxiliary variables -----------------------------------------
@@ -160,6 +164,13 @@ export class MyScene extends CGFscene {
       this.building.display();
       this.popMatrix();
     }
+    // -------------------------------------------------------------
+
+    // Forest ------------------------------------------------------
+    this.pushMatrix();
+    this.translate(0, -21, 100);
+    this.forest.display();
+    this.popMatrix();
     // -------------------------------------------------------------
   }
 }

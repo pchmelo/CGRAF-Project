@@ -1,4 +1,5 @@
 import {CGFobject, CGFappearance} from '../../../lib/CGF.js';
+
 /**
  * MyWindow
  * @constructor
