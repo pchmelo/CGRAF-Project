@@ -39,7 +39,7 @@ export class MyPlane extends CGFobject {
 		this.vertices = [];
 		this.normals = [];
 		this.texCoords = [];
-		const textureScale = 3; // Factor to scale the texture coordinates
+		const textureScale = 10; // Factor to scale the texture coordinates
 	
 		var yCoord = 0.5;
 		for (var j = 0; j <= this.nrDivs; j++) {
