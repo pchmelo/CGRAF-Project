@@ -22,41 +22,57 @@ export class MyCone extends CGFobject {
         this.indices = [];
         this.normals = [];
         this.texCoords = [];
-
+    
         // Base vertices
         for (let i = 0; i < slices; i++) {
             const angle = (i * 2 * Math.PI) / slices;
-            this.vertices.push(Math.cos(angle) * this.radius, 0, Math.sin(angle) * this.radius);
+            const x = Math.cos(angle) * this.radius;
+            const z = Math.sin(angle) * this.radius;
+    
+            this.vertices.push(x, 0, z);
             this.normals.push(0, -1, 0);
-            this.texCoords.push((Math.cos(angle) + 1) / 2, (Math.sin(angle) + 1) / 2);
+            this.texCoords.push((x / this.radius + 1) / 2, (z / this.radius + 1) / 2);
         }
+    
+        // Center of the base
+        const baseCenterIndex = this.vertices.length / 3;
         this.vertices.push(0, 0, 0);
         this.normals.push(0, -1, 0);
         this.texCoords.push(0.5, 0.5);
-
-        // Side vertices
-        for (let i = 0; i < slices; i++) {
-            const angle = (i * 2 * Math.PI) / slices;
-            this.vertices.push(Math.cos(angle) * this.radius, 0, Math.sin(angle) * this.radius);
-            this.normals.push(Math.cos(angle), this.height / this.radius, Math.sin(angle));
-            this.texCoords.push(i / slices, 1);
-        }
-        this.vertices.push(0, this.height, 0);
-        this.normals.push(0, 1, 0);
-        this.texCoords.push(0.5, 0);
-
+    
         // Indices for the base
-        const baseCenterIndex = slices;
         for (let i = 0; i < slices; i++) {
             this.indices.push(baseCenterIndex, i, (i + 1) % slices);
         }
-
+    
+        // Side vertices
+        for (let i = 0; i <= slices; i++) {
+            const angle = (i * 2 * Math.PI) / slices;
+            const x = Math.cos(angle) * this.radius;
+            const z = Math.sin(angle) * this.radius;
+    
+            this.vertices.push(x, 0, z);
+    
+            const normalX = x;
+            const normalY = this.radius / this.height;
+            const normalZ = z;
+            const length = Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+    
+            this.normals.push(normalX / length, normalY / length, normalZ / length); // Normalized normal
+            this.texCoords.push(i / slices, 1);
+        }
+    
+        // Tip of the cone
+        const tipIndex = this.vertices.length / 3;
+        this.vertices.push(0, this.height, 0);
+        this.normals.push(0, 1, 0);
+        this.texCoords.push(0.5, 0);
+    
         // Indices for the sides
-        const tipIndex = slices * 2 + 1;
         for (let i = 0; i < slices; i++) {
             this.indices.push(i + slices + 1, tipIndex, ((i + 1) % slices) + slices + 1);
         }
-
+    
         this.primitiveType = this.scene.gl.TRIANGLES;
         this.initGLBuffers();
     }
