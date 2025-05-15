@@ -62,7 +62,7 @@ export class MyScene extends CGFscene {
     this.building = new MyBuilding(this, 50, 4, 3, this.windowTexture, [0.5, 0.5, 0.5]);
     this.forest = new MyForest(this, 7, 10, 200, 100);
 
-    this.helicopter = new MyHeli(this, -10, -0.25, -9, Math.PI / 2, 0);
+    this.helicopter = new MyHeli(this, -10, -0.25, -9, 0, 0);
     // -------------------------------------------------------------
 
     // Auxiliary variables -----------------------------------------
@@ -158,6 +158,10 @@ export class MyScene extends CGFscene {
 
         this.helicopter.emptyBucket();
     }
+
+    if (keysPressed) {
+        console.log(text);
+    }
   }
 
   update(t) {
@@ -166,7 +170,7 @@ export class MyScene extends CGFscene {
         this.helicopter.x = -10;
         this.helicopter.y = -0.25;
         this.helicopter.z = -9;
-        this.helicopter.angle = Math.PI / 2;
+        this.helicopter.angle = 0;
         this.helicopter.velocity = 0;
         this.helicopter.retract();
         this.helicopter.emptyBucket();
@@ -195,21 +199,77 @@ export class MyScene extends CGFscene {
     }
 
     // Land Building
-    if (this.gui.isKeyPressed("KeyL") && this.inFlight && !this.isLiftingOffBuilding && this.helicopter.x >= -15 && this.helicopter.x <= -5 && this.helicopter.z >= -15 && this.helicopter.z <= -5 && this.helicopter.velocity == 0) {
+    if (this.gui.isKeyPressed("KeyL") && this.inFlight && !this.isLiftingOffBuilding) {
         this.inFlight = false; // Disable user control
         this.isLandingBuilding = true;
         this.helicopter.retract();
     }
 
     if (this.isLandingBuilding) {
-        this.helicopter.y -= 0.1;
+        const targetX = -10;
+        const targetY = -0.25;
+        const targetZ = -9;
 
-        if (this.helicopter.y <= -0.25) {
-            this.isLandingBuilding = false;
-            this.helicopter.y = -0.25; // Reset to ground level
+        // Calculate the angle to the target position
+        const dx = targetX - this.helicopter.x;
+        const dz = targetZ - this.helicopter.z;
+        const distance = Math.sqrt(dx * dx + dz * dz);
+        const desiredAngle = Math.atan2(dx, dz);
+
+        // Normalize helicopter angle
+        let currentAngle = ((this.helicopter.angle + Math.PI) % (2 * Math.PI)) - Math.PI;
+        let angleDiff = desiredAngle - currentAngle;
+
+
+        // Normalize angleDiff
+        angleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI;
+
+        const turnSpeed = 0.05;
+
+        if (Math.abs(angleDiff) > 0.01 && !this.landing) {
+            console.log("Turning towards target");
+            this.helicopter.turn(Math.sign(angleDiff) * Math.min(turnSpeed, Math.abs(angleDiff)));
+            this.helicopter.accelerate(0);
+
+            this.rotationFactor = (t * 360 / 1000) * 2;
+        } else {
+            // Move forward if not at target, slow down when close
+            if (distance > 1  && !this.landing) {
+                const stoppingDistance = this.helicopter.distUntilStop();
+                if (stoppingDistance >= distance) {
+                    console.log("Decelerating to stop");
+                    this.helicopter.accelerate(0);
+
+                    this.rotationFactor = (t * 360 / 1000) * 2;
+                } else {
+                    console.log("Moving forward");
+                    // Move forward, but slower as we get closer
+                    let speed = 0.005 * (distance / 25);
+                    if (speed < 0.002) speed = 0.002;
+                    this.helicopter.accelerate(speed);
+
+                    this.rotationFactor = (t * 360 / 1000) * 3;
+                }
+            } else {
+                console.log("Landing");
+                this.landing = true;
+                this.helicopter.accelerate(0);
+                if (this.helicopter.y > targetY) {
+                    this.helicopter.y -= 0.1;
+                    if (this.helicopter.y <= targetY) {
+                        this.helicopter.y = targetY;
+                        this.landing = false;
+                        this.isLandingBuilding = false; // Finished landing
+                    }
+                } else {
+                    this.helicopter.y = targetY;
+                    this.landing = false;
+                    this.isLandingBuilding = false; // Finished landing
+                }
+
+                this.rotationFactor = (t * 360 / 1000);
+            }
         }
-
-        this.rotationFactor = (t * 360 / 1000);
     }
 
     if (this.inFlight) {
@@ -218,8 +278,8 @@ export class MyScene extends CGFscene {
         // Camera offset
         const distance = 20;
         const height = 15;
-        const offsetX = Math.sin(this.helicopter.angle - Math.PI / 2) * distance;
-        const offsetZ = Math.cos(this.helicopter.angle - Math.PI / 2) * distance;
+        const offsetX = Math.sin(this.helicopter.angle) * distance;
+        const offsetZ = Math.cos(this.helicopter.angle) * distance;
 
         // Update camera position to stay behind the helicopter
         this.camera.setPosition(vec3.fromValues(

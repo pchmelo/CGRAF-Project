@@ -37,16 +37,23 @@ export class MyHeli extends CGFobject {
         this.tiltAngle = Math.min(this.velocity * this.scene.speedFactor, 0.5);
         this.tiltAngle = Math.max(this.tiltAngle, -0.5);
 
-
-        this.scene.rotate(this.tiltAngle, 0, 0, 1);
+        this.scene.rotate(this.tiltAngle, 1, 0, 0);
 
         this.scene.scale(0.25, 0.25, 0.25);
+        this.scene.rotate(Math.PI / 2, 0, 1, 0);
         this.helicopter.display();
         this.scene.popMatrix();
     }
 
     turn(v) {
         this.angle += v;
+
+        // Clamp the angle to the range [0, 2 * Math.PI]
+        if (this.angle < 0) {
+            this.angle += 2 * Math.PI;
+        } else if (this.angle > 2 * Math.PI) {
+            this.angle -= 2 * Math.PI;
+        }
     }
 
     accelerate(v) {
@@ -72,9 +79,30 @@ export class MyHeli extends CGFobject {
         }
 
         // Update the helicopter's position based on velocity and angle
-        this.x += (this.velocity* this.scene.speedFactor) * Math.sin(this.angle - Math.PI / 2);
-        this.z += (this.velocity * this.scene.speedFactor) * Math.cos(this.angle - Math.PI / 2);
+        this.x += (this.velocity* this.scene.speedFactor) * Math.sin(this.angle);
+        this.z += (this.velocity * this.scene.speedFactor) * Math.cos(this.angle);
     }
+
+    distUntilStop() {
+    // Calculate the distance the helicopter will travel until it stops
+    let v = this.velocity;
+    let distance = 0;
+    const speedFactor = this.scene.speedFactor;
+
+    while (Math.abs(v) >= 0.01) {
+        distance += Math.abs(v * speedFactor);
+        if (v > 0) {
+            v -= 0.01;
+        } else if (v < 0) {
+            v += 0.01;
+        }
+    }
+    // Add the last small step if velocity < 0.01 but > 0
+    if (v !== 0) {
+        distance += Math.abs(v * speedFactor);
+    }
+    return distance;
+}
 
     deploy() {
         this.helicopter.deployed = true;
