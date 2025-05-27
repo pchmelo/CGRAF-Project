@@ -5,6 +5,8 @@ import { MyPanorama } from "./objects/MyPanorama.js";
 import { MyBuilding } from "./objects/firefighters/MyBuilding.js";
 import { MyForest } from "./objects/forest/MyForest.js";
 import { MyHeli } from "./objects/helicopter/MyHeli.js";
+import { MyLake } from "./objects/waterAndFire/MyLake.js";
+import { MyFire } from "./objects/waterAndFire/MyFire.js";
 
 /**
  * MyScene
@@ -50,6 +52,9 @@ export class MyScene extends CGFscene {
     this.bladeTexture = new CGFtexture(this, "textures/blade.jpg");
     this.bucketTexture = new CGFtexture(this, "textures/bucket.jpg");
     this.waterTexture = new CGFtexture(this, "textures/water.jpg");
+    this.fireTexture = new CGFtexture(this, "textures/fire.png");
+    this.lakeTexture = new CGFtexture(this, "textures/lake.png");
+    this.foamTexture = new CGFtexture(this, "textures/foam.jpg");
     // -------------------------------------------------------------
 
     //Initialize scene objects -------------------------------------
@@ -63,6 +68,9 @@ export class MyScene extends CGFscene {
     this.forest = new MyForest(this, 7, 10, 200, 100);
 
     this.helicopter = new MyHeli(this, -10, -0.25, -9, 0, 0);
+
+    this.lake = new MyLake(this);
+    this.fire = new MyFire(this, 20, 4, 14);
     // -------------------------------------------------------------
 
     // Auxiliary variables -----------------------------------------
@@ -73,7 +81,14 @@ export class MyScene extends CGFscene {
     this.displayBuilding = true;
     this.displayForest = true;
 
+    this.flamePositionX = -5;
+    this.flamePositionY = -20;
+    this.flamePositionZ = 30;
+    this.flameScaler = 1.0;
+    this.extingishing = false;
+
     this.rotationFactor = 0;
+    this.flameFlickering = 0;
     this.speedFactor = 1;
     // -------------------------------------------------------------
   }
@@ -143,20 +158,12 @@ export class MyScene extends CGFscene {
         this.helicopter.turn(-0.1 * this.speedFactor);
     }
 
-    // Fill Bucket
-    if (this.gui.isKeyPressed("KeyF")) {
-        text += " F ";
-        keysPressed = true;
-
-        this.helicopter.fillBucket();
-    }
-
     // Empty Bucket
-    if (this.gui.isKeyPressed("KeyE")) {
-        text += " E ";
+    if (this.gui.isKeyPressed("KeyO") && this.helicopter.canEmptyBucket()) {
+        text += " O ";
         keysPressed = true;
 
-        this.helicopter.emptyBucket();
+        this.extingishing = true;
     }
 
     if (keysPressed) {
@@ -172,25 +179,28 @@ export class MyScene extends CGFscene {
         this.helicopter.z = -9;
         this.helicopter.angle = 0;
         this.helicopter.velocity = 0;
+        this.awaitLiftOff = false;
         this.helicopter.retract();
-        this.helicopter.emptyBucket();
+        this.extingishing = false;
+        this.flameScaler = 1.0;
         this.inFlight = false;
-        this.isLiftingOffBuilding = false;
+        this.isLiftingOff = false;
         this.isLandingBuilding = false;
         this.camera.setPosition(vec3.fromValues(10, 10, 10));
         this.camera.setTarget(vec3.fromValues(0, 0, 0));
     }
 
     // Lift off Building
-    if (this.gui.isKeyPressed("KeyP") && !this.inFlight && !this.isLandingBuilding && this.helicopter.x >= -15 && this.helicopter.x <= -5 && this.helicopter.z >= -15 && this.helicopter.z <= -5) {
-        this.isLiftingOffBuilding = true;
+    if (this.gui.isKeyPressed("KeyP") && !this.inFlight && !this.isLandingBuilding && !this.isLandingLake) {
+        this.isLiftingOff = true;
+        this.awaitLiftOff = false;
     }
 
-    if (this.isLiftingOffBuilding) {
+    if (this.isLiftingOff) {
         this.helicopter.y += 0.1;
 
         if (this.helicopter.y >= 5) {
-            this.isLiftingOffBuilding = false;
+            this.isLiftingOff = false;
             this.inFlight = true; // Enable user control
             this.helicopter.deploy();
         }
@@ -199,12 +209,19 @@ export class MyScene extends CGFscene {
     }
 
     // Land Building
-    if (this.gui.isKeyPressed("KeyL") && this.inFlight && !this.isLiftingOffBuilding) {
+    if (this.gui.isKeyPressed("KeyL") && this.inFlight && !this.isLiftingOff && !this.helicopter.isBucketFilled() && !this.helicopter.canLandLake()) {
         this.inFlight = false; // Disable user control
         this.isLandingBuilding = true;
         this.helicopter.retract();
     }
 
+    // Land Lake
+    if (this.gui.isKeyPressed("KeyL") && this.inFlight && !this.isLiftingOff && this.helicopter.canLandLake()) {
+        this.inFlight = false; // Disable user control
+        this.isLandingLake = true;
+    }
+
+    // Helicopter landing on building
     if (this.isLandingBuilding) {
         const targetX = -10;
         const targetY = -0.25;
@@ -219,7 +236,6 @@ export class MyScene extends CGFscene {
         // Normalize helicopter angle
         let currentAngle = ((this.helicopter.angle + Math.PI) % (2 * Math.PI)) - Math.PI;
         let angleDiff = desiredAngle - currentAngle;
-
 
         // Normalize angleDiff
         angleDiff = ((angleDiff + Math.PI) % (2 * Math.PI)) - Math.PI;
@@ -272,6 +288,40 @@ export class MyScene extends CGFscene {
         }
     }
 
+    // Helicopter landing on lake
+    if (this.isLandingLake) {
+        this.helicopter.y -= 0.2;
+
+        if (this.helicopter.y <= -16.5) {
+            this.isLandingLake = false;
+            this.helicopter.fillBucket();
+            this.awaitLiftOff = true;
+        }
+
+        this.rotationFactor = (t * 360 / 1000);
+    }
+
+    // Extinguishing fire
+    if (this.extingishing) {
+        this.inFlight = false; // Disable user control while extinguishing
+        this.awaitLiftOff = true; // Keep hovering
+
+        if (this.helicopter.emptyBucket()) {
+            this.flameScaler -= 0.01;
+        } else {
+            this.flameScaler = 0;
+            this.extingishing = false; // Stop extinguishing when bucket is empty
+            this.inFlight = true;
+            this.awaitLiftOff = false;
+        }
+    }
+
+    // Maintain helicopter hovering
+    if (this.awaitLiftOff) {
+        this.rotationFactor = (t * 360 / 1000);
+    }
+
+    // Helicopter in flight (with user control)
     if (this.inFlight) {
         this.checkKeys();
 
@@ -298,7 +348,10 @@ export class MyScene extends CGFscene {
         // Update rotation factor for helicopter blades
         this.rotationFactor = (t * 360 / 1000) * 3;
     }
-}
+
+      // Update fire flickering
+      this.flameFlickering = (t * Math.PI / 1000) * 5;
+  }
 
   setDefaultAppearance() {
     this.setAmbient(0.5, 0.5, 0.5, 1.0);
@@ -375,6 +428,23 @@ export class MyScene extends CGFscene {
     // Helicopter --------------------------------------------------
       this.pushMatrix();
       this.helicopter.display();
+      this.popMatrix();
+    // -------------------------------------------------------------
+
+    // Lake --------------------------------------------------------
+      this.pushMatrix();
+      this.translate(-40, -19.99, 20);
+      this.scale(30, 1, 30);
+      this.rotate(-Math.PI / 2, 1, 0, 0);
+      this.lake.display();
+      this.popMatrix();
+    // -------------------------------------------------------------
+
+    // Fire --------------------------------------------------------
+      this.pushMatrix();
+      this.translate(this.flamePositionX, this.flamePositionY, this.flamePositionZ);
+      this.scale(this.flameScaler, this.flameScaler, this.flameScaler);
+      this.fire.display();
       this.popMatrix();
     // -------------------------------------------------------------
   }

@@ -84,25 +84,37 @@ export class MyHeli extends CGFobject {
     }
 
     distUntilStop() {
-    // Calculate the distance the helicopter will travel until it stops
-    let v = this.velocity;
-    let distance = 0;
-    const speedFactor = this.scene.speedFactor;
+        // Calculate the distance the helicopter will travel until it stops
+        let v = this.velocity;
+        let distance = 0;
+        const speedFactor = this.scene.speedFactor;
 
-    while (Math.abs(v) >= 0.01) {
-        distance += Math.abs(v * speedFactor);
-        if (v > 0) {
-            v -= 0.01;
-        } else if (v < 0) {
-            v += 0.01;
+        while (Math.abs(v) >= 0.01) {
+            distance += Math.abs(v * speedFactor);
+            if (v > 0) {
+                v -= 0.01;
+            } else if (v < 0) {
+                v += 0.01;
+            }
         }
+        // Add the last small step if velocity < 0.01 but > 0
+        if (v !== 0) {
+            distance += Math.abs(v * speedFactor);
+        }
+        return distance;
     }
-    // Add the last small step if velocity < 0.01 but > 0
-    if (v !== 0) {
-        distance += Math.abs(v * speedFactor);
+
+    isBucketFilled() {
+        return this.helicopter.bucket.filled
     }
-    return distance;
-}
+
+    canLandLake() {
+        return (!this.helicopter.bucket.filled && this.velocity == 0 && this.x > -50 && this.x < -30 && this.z > 10 && this.z < 30);
+    }
+
+    canEmptyBucket() {
+        return (this.helicopter.bucket.filled && this.velocity == 0 && this.x > this.scene.flamePositionX - 10 && this.x < this.scene.flamePositionX + 10 && this.z > this.scene.flamePositionZ - 10 && this.z < this.scene.flamePositionZ + 10);
+    }
 
     deploy() {
         this.helicopter.deployed = true;
@@ -110,13 +122,18 @@ export class MyHeli extends CGFobject {
 
     retract() {
         this.helicopter.deployed = false;
+        this.helicopter.bucket.filled = false;
     }
 
     fillBucket() {
+        this.helicopter.bucket.scaler = 1.0;
+        this.helicopter.bucket.volume = 0;
+        this.helicopter.bucket.drainWater = -0.5;
         this.helicopter.bucket.filled = true;
+        this.helicopter.bucket.emptying = false;
     }
 
     emptyBucket() {
-        this.helicopter.bucket.filled = false;
+        return this.helicopter.bucket.empty();
     }
 }

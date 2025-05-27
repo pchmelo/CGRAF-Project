@@ -14,6 +14,12 @@ export class MyBucket extends CGFobject {
 
         this.filled = false;
 
+        this.emptying = false;
+
+        this.scaler = 1.0; // Scale factor for the water
+        this.volume = 0;
+        this.drainWater = -0.5;
+
         this.initComponents();
         this.initMaterials(scene);
     }
@@ -58,21 +64,30 @@ export class MyBucket extends CGFobject {
             if (this.filled) {
                 this.cableAngle = Math.PI / 4;
                 this.distFromCenter = -1.4;
-                this.distToBottom = -3.55;
+                this.distToBottom = -3.5;
 
                 this.scene.translate(0, 0.32, 0);
 
                 // Water
                 this.waterMaterial.apply();
                 this.scene.pushMatrix();
-                this.scene.translate(0, -0.5, 0);
+                this.scene.translate(0, this.drainWater, 0);
+                this.scene.scale(this.scaler, this.scaler, this.scaler);
                 this.scene.rotate(Math.PI, 1, 0, 0);
                 this.water.display();
                 this.scene.popMatrix();
+
+                if (this.emptying) {
+                    this.scene.pushMatrix();
+                    this.scene.translate(0, -73.5, 0);
+                    this.scene.scale(this.volume, 70, this.volume);
+                    this.bucket.display();
+                    this.scene.popMatrix();
+                }
             } else {
                 this.cableAngle = Math.PI / 6;
                 this.distFromCenter = -1;
-                this.distToBottom = -1.55;
+                this.distToBottom = -1.5;
             }
 
             // Bucket
@@ -147,7 +162,7 @@ export class MyBucket extends CGFobject {
             // Release Valve
             this.scene.pushMatrix();
             this.scene.translate(0, this.distToBottom, 0);
-            this.scene.scale(10, 0.03, 10);
+            this.scene.scale(20, 0.03, 20);
             this.cable.display();
             this.scene.popMatrix();
         this.scene.popMatrix();
@@ -158,5 +173,29 @@ export class MyBucket extends CGFobject {
         this.scene.scale(2, 3, 2);
         this.cable.display();
         this.scene.popMatrix();
+    }
+
+    empty() {
+        this.emptying = true;
+
+        if (this.emptying) {
+            this.scaler -= 0.01;
+            this.drainWater -= 0.03;
+
+            if (this.scaler >= 0.5) {
+                this.volume += 0.05;
+            } else {
+                this.volume -= 0.05;
+            }
+
+            if (this.scaler <= 0) {
+                this.scaler = 0;
+                this.volume = 0;
+                this.filled = false;
+                this.emptying = false;
+            }
+        }
+
+        return this.emptying;
     }
 }
