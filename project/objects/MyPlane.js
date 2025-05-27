@@ -10,7 +10,7 @@ import {CGFobject, CGFappearance} from '../../lib/CGF.js';
  * @param maxT - maximum texture coordinate in T
 */
 export class MyPlane extends CGFobject {
-	constructor(scene, nrDivs, minS, maxS, minT, maxT) {
+	constructor(scene, nrDivs, minS, maxS, minT, maxT, isLake = false) {
 		super(scene);
 		// nrDivs = 1 if not provided
 		nrDivs = typeof nrDivs !== 'undefined' ? nrDivs : 1;
@@ -22,16 +22,29 @@ export class MyPlane extends CGFobject {
 		this.maxT = maxT || 1;
 		this.q = (this.maxS - this.minS) / this.nrDivs;
 		this.w = (this.maxT - this.minT) / this.nrDivs;
+
+		this.isLake = isLake;
+
 		this.initBuffers();
 		this.initMaterials(scene);
 	}
 
 	initMaterials(scene) {
-		this.material = new CGFappearance(this.scene);
-		this.material.setEmission(0.5, 0.5, 0.5, 1);
-		this.material.setShininess(10.0);
-		this.material.setTexture(scene.grassTexture);
-		this.material.setTextureWrap('REPEAT', 'REPEAT');
+		// Material for the grass plane
+		this.grassMaterial = new CGFappearance(this.scene);
+		this.grassMaterial.setEmission(0.5, 0.5, 0.5, 1);
+		this.grassMaterial.setShininess(10.0);
+		this.grassMaterial.setTexture(scene.grassTexture);
+		this.grassMaterial.setTextureWrap('REPEAT', 'REPEAT');
+
+		// Material for lake
+		this.lakeMaterial = new CGFappearance(this.scene);
+		this.lakeMaterial.setAmbient(0.1, 0.1, 0.1, 1);
+		this.lakeMaterial.setDiffuse(1, 1, 1, 1);
+		this.lakeMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+		this.lakeMaterial.setShininess(10.0);
+		this.lakeMaterial.setTexture(scene.lakeTexture);
+		this.lakeMaterial.setTextureWrap('REPEAT', 'REPEAT');
 	}
 
 	initBuffers() {
@@ -39,7 +52,14 @@ export class MyPlane extends CGFobject {
 		this.vertices = [];
 		this.normals = [];
 		this.texCoords = [];
-		const textureScale = 10; // Factor to scale the texture coordinates
+
+		let textureScale;
+
+		if (this.isLake) {
+			textureScale = 1;
+		} else {
+			textureScale = 10;
+		}
 	
 		var yCoord = 0.5;
 		for (var j = 0; j <= this.nrDivs; j++) {
@@ -79,7 +99,11 @@ export class MyPlane extends CGFobject {
 	}
 
 	display() {
-		this.material.apply();
+		if (this.isLake) {
+			this.lakeMaterial.apply();
+		} else {
+			this.grassMaterial.apply();
+		}
 		super.display();
 	}
 
