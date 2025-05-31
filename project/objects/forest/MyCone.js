@@ -8,24 +8,24 @@ import { CGFobject } from '../../../lib/CGF.js';
  * @param {number} height - Height of the cone
  */
 export class MyCone extends CGFobject {
-    constructor(scene, radius, height) {
+    constructor(scene, radius, height, slices = 64) {
         super(scene);
         this.radius = radius;
         this.height = height;
+        this.slices = slices;
 
         this.initBuffers();
     }
 
     initBuffers() {
-        const slices = 64; // Number of slices for the cone
         this.vertices = [];
         this.indices = [];
         this.normals = [];
         this.texCoords = [];
     
         // Base vertices
-        for (let i = 0; i < slices; i++) {
-            const angle = (i * 2 * Math.PI) / slices;
+        for (let i = 0; i < this.slices; i++) {
+            const angle = (i * 2 * Math.PI) / this.slices;
             const x = Math.cos(angle) * this.radius;
             const z = Math.sin(angle) * this.radius;
     
@@ -41,13 +41,13 @@ export class MyCone extends CGFobject {
         this.texCoords.push(0.5, 0.5);
     
         // Indices for the base
-        for (let i = 0; i < slices; i++) {
-            this.indices.push(baseCenterIndex, i, (i + 1) % slices);
+        for (let i = 0; i < this.slices; i++) {
+            this.indices.push(baseCenterIndex, i, (i + 1) % this.slices);
         }
     
         // Side vertices
-        for (let i = 0; i <= slices; i++) {
-            const angle = (i * 2 * Math.PI) / slices;
+        for (let i = 0; i <= this.slices; i++) {
+            const angle = (i * 2 * Math.PI) / this.slices;
             const x = Math.cos(angle) * this.radius;
             const z = Math.sin(angle) * this.radius;
     
@@ -59,7 +59,7 @@ export class MyCone extends CGFobject {
             const length = Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
     
             this.normals.push(normalX / length, normalY / length, normalZ / length); // Normalized normal
-            this.texCoords.push(i / slices, 1);
+            this.texCoords.push(i / this.slices, 1);
         }
     
         // Tip of the cone
@@ -69,8 +69,8 @@ export class MyCone extends CGFobject {
         this.texCoords.push(0.5, 0);
     
         // Indices for the sides
-        for (let i = 0; i < slices; i++) {
-            this.indices.push(i + slices + 1, tipIndex, ((i + 1) % slices) + slices + 1);
+        for (let i = 0; i < this.slices; i++) {
+            this.indices.push(i + this.slices + 1, tipIndex, ((i + 1) % this.slices) + this.slices + 1);
         }
     
         this.primitiveType = this.scene.gl.TRIANGLES;

@@ -1,4 +1,4 @@
-import { CGFscene, CGFcamera, CGFaxis, CGFtexture } from "../lib/CGF.js";
+import { CGFscene, CGFcamera, CGFaxis, CGFtexture, CGFshader } from "../lib/CGF.js";
 import { MyPlane } from "./objects/MyPlane.js";
 import { MySphere } from "./objects/MySphere.js";
 import { MyPanorama } from "./objects/MyPanorama.js";
@@ -7,6 +7,7 @@ import { MyForest } from "./objects/forest/MyForest.js";
 import { MyHeli } from "./objects/helicopter/MyHeli.js";
 import { MyLake } from "./objects/waterAndFire/MyLake.js";
 import { MyFire } from "./objects/waterAndFire/MyFire.js";
+import { MyFireplace } from "./objects/waterAndFire/MyFireplace.js";
 
 /**
  * MyScene
@@ -34,18 +35,34 @@ export class MyScene extends CGFscene {
 
     // Enable blending for transparent textures
     this.gl.enable(this.gl.BLEND);
-    this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+    this.gl.enable(this.gl.BLEND);
+    this.gl.blendFuncSeparate(
+      this.gl.SRC_ALPHA,
+      this.gl.ONE_MINUS_SRC_ALPHA,
+      this.gl.ONE,
+      this.gl.ONE
+    );
 
-    this.setUpdatePeriod(50);
+    this.setUpdatePeriod(25);
+
+    // Shaders -----------------------------------------------------
+    this.fireShader = new CGFshader(this.gl, "shaders/fire.vert", "shaders/fire.frag");
+    this.blinkerShader = new CGFshader(this.gl, "shaders/default.vert", "shaders/blinker.frag");
+    this.helipadShader = new CGFshader(this.gl, "shaders/default.vert", "shaders/helipad.frag");
+    // -------------------------------------------------------------
 
     // Initialize textures -----------------------------------------
     this.earthTexture = new CGFtexture(this, "textures/earth.jpg");
     this.grassTexture = new CGFtexture(this, "textures/grass.jpg");
     this.panoramaTexture = new CGFtexture(this, "textures/panorama.jpg");
+    this.wallTexture = new CGFtexture(this, "textures/wall.jpg");
     this.windowTexture = new CGFtexture(this, "textures/window.jpg");
     this.signTexture = new CGFtexture(this, "textures/sign.png");
     this.helipadTexture = new CGFtexture(this, "textures/helipad.png");
-    this.crownTexture = new CGFtexture(this, "textures/leaves.jpg");
+    this.crownTexture = new CGFtexture(this, "textures/shadedLeaves.jpg");
+    this.crownTopTexture = new CGFtexture(this, "textures/leaves.jpg");
+    this.crownBottomTexture = new CGFtexture(this, "textures/shadedLeavesBot.jpg");
+    this.treeShadowTexture = new CGFtexture(this, "textures/treeShadow.png");
     this.trunkTexture = new CGFtexture(this, "textures/trunk.jpg");
     this.fuselageTexture = new CGFtexture(this, "textures/fuselage.jpg");
     this.tintedGlassTexture = new CGFtexture(this, "textures/tinted_glass.jpg");
@@ -54,7 +71,9 @@ export class MyScene extends CGFscene {
     this.waterTexture = new CGFtexture(this, "textures/water.jpg");
     this.fireTexture = new CGFtexture(this, "textures/fire.png");
     this.lakeTexture = new CGFtexture(this, "textures/lake.png");
-    this.foamTexture = new CGFtexture(this, "textures/foam.jpg");
+    this.blinkerTexture = new CGFtexture(this, "textures/blinker.jpg");
+    this.upTexture = new CGFtexture(this, "textures/upPad.png");
+    this.downTexture = new CGFtexture(this, "textures/downPad.png");
     // -------------------------------------------------------------
 
     //Initialize scene objects -------------------------------------
@@ -65,12 +84,14 @@ export class MyScene extends CGFscene {
     this.panorama = new MyPanorama(this, this.panoramaTexture);
 
     this.building = new MyBuilding(this, 50, 4, 3, this.windowTexture, [0.5, 0.5, 0.5]);
-    this.forest = new MyForest(this, 7, 10, 200, 100);
+    this.forest1 = new MyForest(this, 7, 7, 450, 450);
+    this.forest2 = new MyForest(this, 7, 7, 450, 450);
 
     this.helicopter = new MyHeli(this, -10, -0.25, -9, 0, 0);
 
     this.lake = new MyLake(this);
-    this.fire = new MyFire(this, 20, 4, 14);
+    this.fire = new MyFire(this, 6, 10, 14);
+    this.fireplace = new MyFireplace(this);
     // -------------------------------------------------------------
 
     // Auxiliary variables -----------------------------------------
@@ -81,6 +102,10 @@ export class MyScene extends CGFscene {
     this.displayBuilding = true;
     this.displayForest = true;
 
+    this.lakePositionX = 15;
+    this.lakePositionY = -19.99;
+    this.lakePositionZ = 10;
+
     this.flamePositionX = -5;
     this.flamePositionY = -20;
     this.flamePositionZ = 30;
@@ -88,7 +113,6 @@ export class MyScene extends CGFscene {
     this.extingishing = false;
 
     this.rotationFactor = 0;
-    this.flameFlickering = 0;
     this.speedFactor = 1;
     // -------------------------------------------------------------
   }
@@ -98,7 +122,7 @@ export class MyScene extends CGFscene {
       1,  // field of view (fov)
       0.1,
       1000,
-      vec3.fromValues(10, 10, 10),
+      vec3.fromValues(10, 10, -20),
       vec3.fromValues(0, 0, 0)
     );
   }
@@ -172,7 +196,10 @@ export class MyScene extends CGFscene {
   }
 
   update(t) {
-    // Reset helicopter position
+    this.time = (performance.now() % 1000) / 1000; // Normalize time to [0, 1] range
+    //console.log(this.time);
+
+    // Reset helicopter position -----------------------------------
     if (this.gui.isKeyPressed("KeyR")) {
         this.helicopter.x = -10;
         this.helicopter.y = -0.25;
@@ -185,12 +212,17 @@ export class MyScene extends CGFscene {
         this.flameScaler = 1.0;
         this.inFlight = false;
         this.isLiftingOff = false;
+        this.isLiftingOffBuilding = false;
         this.isLandingBuilding = false;
-        this.camera.setPosition(vec3.fromValues(10, 10, 10));
+        this.isLandingLake = false;
+        this.landing = false;
+        this.camera.setPosition(vec3.fromValues(10, 10, -20));
         this.camera.setTarget(vec3.fromValues(0, 0, 0));
     }
 
-    // Lift off Building
+    // -------------------------------------------------------------
+
+    // Lift off ----------------------------------------------------
     if (this.gui.isKeyPressed("KeyP") && !this.inFlight && !this.isLandingBuilding && !this.isLandingLake) {
         this.isLiftingOff = true;
         this.awaitLiftOff = false;
@@ -199,14 +231,26 @@ export class MyScene extends CGFscene {
     if (this.isLiftingOff) {
         this.helicopter.y += 0.1;
 
+        if (this.helicopter.isBucketFilled()) { // If the bucket is filled, we are lifting off in the lake
+            this.helicopter.y += 0.1;
+        } else {
+            this.isLiftingOffBuilding = true;
+        }
+
         if (this.helicopter.y >= 5) {
             this.isLiftingOff = false;
+            this.isLiftingOffBuilding = false;
+            this.reset = true;
             this.inFlight = true; // Enable user control
             this.helicopter.deploy();
         }
 
         this.rotationFactor = (t * 360 / 1000);
     }
+
+    // -------------------------------------------------------------
+
+    // Landing Handling --------------------------------------------
 
     // Land Building
     if (this.gui.isKeyPressed("KeyL") && this.inFlight && !this.isLiftingOff && !this.helicopter.isBucketFilled() && !this.helicopter.canLandLake()) {
@@ -275,11 +319,13 @@ export class MyScene extends CGFscene {
                     if (this.helicopter.y <= targetY) {
                         this.helicopter.y = targetY;
                         this.landing = false;
+                        this.reset = true;
                         this.isLandingBuilding = false; // Finished landing
                     }
                 } else {
                     this.helicopter.y = targetY;
                     this.landing = false;
+                    this.reset = true;
                     this.isLandingBuilding = false; // Finished landing
                 }
 
@@ -301,7 +347,9 @@ export class MyScene extends CGFscene {
         this.rotationFactor = (t * 360 / 1000);
     }
 
-    // Extinguishing fire
+    // -------------------------------------------------------------
+
+    // Extinguishing fire ------------------------------------------
     if (this.extingishing) {
         this.inFlight = false; // Disable user control while extinguishing
         this.awaitLiftOff = true; // Keep hovering
@@ -315,6 +363,10 @@ export class MyScene extends CGFscene {
             this.awaitLiftOff = false;
         }
     }
+
+    // -------------------------------------------------------------
+
+    // Flying Handling ---------------------------------------------
 
     // Maintain helicopter hovering
     if (this.awaitLiftOff) {
@@ -348,9 +400,6 @@ export class MyScene extends CGFscene {
         // Update rotation factor for helicopter blades
         this.rotationFactor = (t * 360 / 1000) * 3;
     }
-
-      // Update fire flickering
-      this.flameFlickering = (t * Math.PI / 1000) * 5;
   }
 
   setDefaultAppearance() {
@@ -378,7 +427,7 @@ export class MyScene extends CGFscene {
     // Plane -------------------------------------------------------
     if (this.displayPlane) {
       this.pushMatrix();
-      this.scale(400, 1, 400);
+      this.scale(600, 1, 600);
       this.translate(0, -20, 0);
       this.rotate(-Math.PI / 2, 1, 0, 0);
       this.plane.display();
@@ -405,23 +454,24 @@ export class MyScene extends CGFscene {
     }
     // -------------------------------------------------------------
 
-    // Building ----------------------------------------------------
-    if (this.displayBuilding) {
-      this.pushMatrix();
-      this.translate(-10, -20, -10);
-      this.scale(0.25, 0.25, 0.25);
-      this.building.display();
-      this.popMatrix();
-    }
-    // -------------------------------------------------------------
-
     // Forest ------------------------------------------------------
+    let forestSelector = true;
+
     if (this.displayForest) {
-      this.pushMatrix();
-      this.translate(-5, -20.2, 50);
-      this.scale(0.25, 0.25, 0.25);
-      this.forest.display();
-      this.popMatrix();
+      for (let i = 0; i < 6; i++) {
+        this.pushMatrix();
+        this.rotate(i * Math.PI / 3, 0, 1, 0);
+        this.translate(0, -20.2, 100);
+        this.scale(0.25, 0.25, 0.25);
+        if (forestSelector) {
+          this.forest1.display();
+          forestSelector = false;
+        } else {
+          this.forest2.display();
+          forestSelector = true;
+        }
+        this.popMatrix();
+      }
     }
     // -------------------------------------------------------------
 
@@ -433,11 +483,28 @@ export class MyScene extends CGFscene {
 
     // Lake --------------------------------------------------------
       this.pushMatrix();
-      this.translate(-40, -19.99, 20);
-      this.scale(30, 1, 30);
+      this.translate(this.lakePositionX, this.lakePositionY, this.lakePositionZ);
+      this.scale(40, 1, 40);
       this.rotate(-Math.PI / 2, 1, 0, 0);
       this.lake.display();
       this.popMatrix();
+    // -------------------------------------------------------------
+
+    // Fireplace ---------------------------------------------------
+      this.pushMatrix();
+      this.translate(this.flamePositionX, this.flamePositionY + 1.25, this.flamePositionZ);
+      this.fireplace.display();
+      this.popMatrix();
+    // -------------------------------------------------------------
+
+    // Building ----------------------------------------------------
+    if (this.displayBuilding) {
+      this.pushMatrix();
+      this.translate(-10, -20, -10);
+      this.scale(0.25, 0.25, 0.25);
+      this.building.display();
+      this.popMatrix();
+    }
     // -------------------------------------------------------------
 
     // Fire --------------------------------------------------------

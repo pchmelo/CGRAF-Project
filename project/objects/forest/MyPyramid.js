@@ -1,4 +1,4 @@
-import { CGFobject } from '../../../lib/CGF.js';
+import { CGFobject, CGFappearance } from '../../../lib/CGF.js';
 import { MyHexagon } from './MyHexagon.js';
 import { MyTriangle } from './MyTriangle.js';
 
@@ -10,12 +10,47 @@ import { MyTriangle } from './MyTriangle.js';
  * @param {number} height - Height of the pyramid
  */
 export class MyPyramid extends CGFobject {
-    constructor(scene, radius, height) {
+    constructor(scene, radius, height, crownColor, isTop = false) {
         super(scene);
         this.radius = radius;
         this.height = height;
 
+        this.crownColor = crownColor;
+        this.isTop = isTop;
+
+        this.initMaterials();
         this.initComponents();
+    }
+
+    initMaterials() {
+        if (!this.isTop) {
+            // Middle crown material
+            this.crownMaterial = new CGFappearance(this.scene);
+            this.crownMaterial.setAmbient(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
+            this.crownMaterial.setDiffuse(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
+            this.crownMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+            this.crownMaterial.setShininess(10.0);
+            this.crownMaterial.setTexture(this.scene.crownTexture);
+            this.crownMaterial.setTextureWrap('REPEAT', 'REPEAT');
+        } else {
+            // Top crown material
+            this.crownMaterial = new CGFappearance(this.scene);
+            this.crownMaterial.setAmbient(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
+            this.crownMaterial.setDiffuse(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
+            this.crownMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+            this.crownMaterial.setShininess(10.0);
+            this.crownMaterial.setTexture(this.scene.crownTopTexture);
+            this.crownMaterial.setTextureWrap('REPEAT', 'REPEAT');
+        }
+
+        // Bottom crown material
+        this.crownBottomMaterial = new CGFappearance(this.scene);
+        this.crownBottomMaterial.setAmbient(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
+        this.crownBottomMaterial.setDiffuse(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
+        this.crownBottomMaterial.setSpecular(0.1, 0.1, 0.1, 1);
+        this.crownBottomMaterial.setShininess(10.0);
+        this.crownBottomMaterial.setTexture(this.scene.crownBottomTexture);
+        this.crownBottomMaterial.setTextureWrap('REPEAT', 'REPEAT');
     }
 
     initComponents() {
@@ -28,6 +63,7 @@ export class MyPyramid extends CGFobject {
 
     display() {
         // Draw the base
+        this.crownBottomMaterial.apply();
         this.scene.pushMatrix();
         this.base.display();
         this.scene.popMatrix();
@@ -37,6 +73,7 @@ export class MyPyramid extends CGFobject {
         const sideLength = 2 * this.radius * Math.sin(Math.PI / sides);
         const faceHeight = Math.sqrt((this.height ** 2) + ((this.radius * Math.cos(Math.PI/sides)) ** 2));
     
+        this.crownMaterial.apply();
         for (let i = 0; i < sides; i++) {
             this.scene.pushMatrix();
     

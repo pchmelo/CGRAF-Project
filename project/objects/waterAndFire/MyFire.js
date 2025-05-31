@@ -22,9 +22,7 @@ export class MyFire extends CGFobject {
 
     initMaterials() {
         this.fireMaterial = new CGFappearance(this.scene);
-        this.fireMaterial.setAmbient(1.0, 0.5, 0.0, 1.0);
-        this.fireMaterial.setDiffuse(1.0, 0.7, 0.2, 1.0);
-        this.fireMaterial.setSpecular(1.0, 0.9, 0.5, 1.0);
+        this.fireMaterial.setEmission(1.0, 0.5, 0.0, 1.0);
         this.fireMaterial.setShininess(50.0);
         this.fireMaterial.setTexture(this.scene.fireTexture);
         this.fireMaterial.setTextureWrap('REPEAT', 'REPEAT');
@@ -40,7 +38,7 @@ export class MyFire extends CGFobject {
             const z = (Math.random() - 0.5) * 0.5;
             this.flames.push({ triangle: new MyTriangle(this.scene), scale, angle, x, z });
 
-            angleStep += (Math.PI * 2) / this.numFlames;
+            angleStep += (Math.PI * 2) / (this.numFlames * 2);
         }
     }
 
@@ -49,9 +47,25 @@ export class MyFire extends CGFobject {
         for (const flame of this.flames) {
             this.scene.pushMatrix();
             this.scene.translate(flame.x, 0, flame.z);
-            this.scene.rotate(flame.angle + this.scene.flameFlickering, 0, 1, 0);
+            this.scene.rotate(flame.angle, 0, 1, 0);
             this.scene.scale(flame.scale * 0.5, flame.scale, 1);
+
+            this.scene.setActiveShader(this.scene.fireShader);
+            
+            this.scene.fireTexture.bind(0);
+
+            let displacement = Math.random(); // Random for each flame
+
+            this.scene.fireShader.setUniformsValues({
+                uTime: this.scene.time,
+                displacement: displacement,
+                uSampler: 0
+            });
+            
             flame.triangle.display();
+
+            this.scene.setActiveShader(this.scene.defaultShader);
+
             this.scene.popMatrix();
         }
     }
