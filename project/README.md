@@ -146,3 +146,11 @@ For both sine functions we used the time variable, but not the one provided by t
 #### Shader Image:
 
 <img src="./screenshots/project-t03g02-7.png" width="400">
+
+### Proj-8: Additional Developments
+
+The additional development we choose to implement was to create a smooth transition between the different textures used in the helipad up and down animations. To achieve this, we used the `mix(texture1, texture2, factor)` function in the fragment shader, where the factor is a value that oscillates between 0 and 1. This allows us to smoothly transition between the two textures, creating a more smooth animation.
+
+#### Additional Development Image:
+
+<img src="./screenshots/project-t03g02-8.png" width="400">
