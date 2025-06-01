@@ -30,13 +30,13 @@ export class MyForest extends CGFobject {
             for (let j = 0; j < this.cols; j++) {
                 // Randomize tree parameters
                 const treeTilt = [Math.max(Math.random() * 10, 0), Math.random() > 0.5 ? 0 : 1];
-                const trunkRadius = Math.random() * 1.5 + 2;    // Between 2 and 3.5
-                const treeHeight = Math.random() * 20 + 17.5;   // Between 17.5 and 37.5
-                const crownColor = [Math.random() * 0.3 + 0.4, Math.random() * 0.3 + 0.6, Math.random() * 0.3 + 0.2];
+                const trunkRadius = Math.random() * 2 + 4.5;    // Between 3 and 4.5
+                const treeHeight = Math.random() * 20 + 47.5;   // Between 27.5 and 47.5
+                const crownColor = this.colorPicker();
 
                 // Randomize position offset
-                const xOffset = (Math.random() - 0.5) * colSpacing * 0.5;
-                const zOffset = (Math.random() - 0.5) * rowSpacing * 0.5;
+                const xOffset = (Math.random() - 0.5) * colSpacing * 0.60;
+                const zOffset = (Math.random() - 0.5) * rowSpacing * 0.60;
 
                 // Calculate tree position
                 const x = -this.width / 2 + j * colSpacing + xOffset;
@@ -56,5 +56,22 @@ export class MyForest extends CGFobject {
             tree.display();
             this.scene.popMatrix();
         }
+    }
+
+    colorPicker() {
+        const baseColors = [
+            [0.80, 0.58, 0.15], // Brownish Yellow
+            [0.32, 0.31, 0.00], // Military Green
+            [0.73, 0.31, 0.00], // Dark Orange
+            [0.00, 0.50, 0.00], // Dark Green
+            [0.00, 0.40, 0.00], // Olive Green
+            [0.00, 0.30, 0.00], // Forest Green
+        ];
+        
+        const base = baseColors[Math.floor(Math.random() * baseColors.length)];
+
+        // Add random variation to each component
+        const randomness = 0.2; // 0: Base color without variation ; 1: Entirely random color
+        return base.map(c => Math.min(1, Math.max(0, c + (Math.random() - 0.5) * randomness)));
     }
 }

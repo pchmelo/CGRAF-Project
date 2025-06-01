@@ -58,7 +58,7 @@ export class MyPlane extends CGFobject {
 		if (this.isLake) {
 			textureScale = 1;
 		} else {
-			textureScale = 10;
+			textureScale = 20;
 		}
 	
 		var yCoord = 0.5;

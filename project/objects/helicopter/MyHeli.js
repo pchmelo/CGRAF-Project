@@ -109,7 +109,7 @@ export class MyHeli extends CGFobject {
     }
 
     canLandLake() {
-        return (!this.helicopter.bucket.filled && this.velocity == 0 && this.x > -50 && this.x < -30 && this.z > 10 && this.z < 30);
+        return (!this.helicopter.bucket.filled && this.velocity == 0 && this.x > this.scene.lakePositionX - 15 && this.x < this.scene.lakePositionX + 15 && this.z > this.scene.lakePositionZ - 15 && this.z < this.scene.lakePositionZ + 15);
     }
 
     canEmptyBucket() {

@@ -1,6 +1,7 @@
 import { CGFobject, CGFappearance } from '../../../lib/CGF.js';
 import { MyCone } from './MyCone.js';
 import { MyPyramid } from './MyPyramid.js';
+import { MyWindow } from '../firefighters/MyWindow.js';
 
 /**
  * MyTree
@@ -21,21 +22,14 @@ export class MyTree extends CGFobject {
 
         // Derived parameters
         this.crownHeight = 0.8 * this.treeHeight;
-        this.numPyramids = Math.ceil(this.crownHeight / 4);
+        this.numPyramids = Math.ceil(this.crownHeight / 10);
 
         this.initComponents();
         this.initMaterials();
     }
 
     initMaterials() {
-        this.crownMaterial = new CGFappearance(this.scene);
-        this.crownMaterial.setAmbient(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
-        this.crownMaterial.setDiffuse(this.crownColor[0], this.crownColor[1], this.crownColor[2], 1);
-        this.crownMaterial.setSpecular(0.1, 0.1, 0.1, 1);
-        this.crownMaterial.setShininess(10.0);
-        this.crownMaterial.setTexture(this.scene.crownTexture);
-        this.crownMaterial.setTextureWrap('REPEAT', 'REPEAT');
-
+        // Trunk material
         this.trunkMaterial = new CGFappearance(this.scene);
         this.trunkMaterial.setAmbient(0.5, 0.5, 0.5, 1);
         this.trunkMaterial.setDiffuse(0.5, 0.5, 0.5, 1);
@@ -46,17 +40,19 @@ export class MyTree extends CGFobject {
     }
 
     initComponents() {
-        this.trunk = new MyCone(this.scene, this.trunkRadius, this.treeHeight);
+        this.trunk = new MyCone(this.scene, this.trunkRadius, this.treeHeight, 8);
+        this.shadow = new MyWindow(this.scene, this.scene.treeShadowTexture);
+
         this.crown = [];
         let scale = 0;
 
         for (let i = 0; i < this.numPyramids; i++) {
             if (i === this.numPyramids - 1) {
-                this.crown.push(new MyPyramid(this.scene, (this.trunkRadius * 2.5) - (this.trunkRadius * 1.25), this.crownHeight / this.numPyramids));
+                this.crown.push(new MyPyramid(this.scene, (this.trunkRadius * 2.5) - (this.trunkRadius * 1.25), this.crownHeight / this.numPyramids, this.crownColor, true));
                 continue;
             }
 
-            this.crown.push(new MyPyramid(this.scene, (this.trunkRadius * 2.5) - ((this.trunkRadius * 1.25) * scale), (this.crownHeight * 1.5) / this.numPyramids));
+            this.crown.push(new MyPyramid(this.scene, (this.trunkRadius * 2.5) - ((this.trunkRadius * 1.25) * scale), (this.crownHeight * 1.5) / this.numPyramids, this.crownColor));
             scale += 1 / this.numPyramids;
         }
     }
@@ -77,14 +73,27 @@ export class MyTree extends CGFobject {
         this.scene.popMatrix();
 
         // Draw crown
-        for (let i = 0; i < this.numPyramids; i++) {
-            this.crownMaterial.apply();
+        for (let i = 0; i < this.numPyramids - 1; i++) {
             this.scene.pushMatrix();
             this.scene.translate(0, this.treeHeight - this.crownHeight + (i * this.crownHeight) / this.numPyramids, 0);
             this.crown[i].display();
             this.scene.popMatrix();
         }
 
+        // Draw top crown
+        this.scene.pushMatrix();
+        this.scene.translate(0, this.treeHeight - this.crownHeight + ((this.numPyramids - 1) * this.crownHeight) / this.numPyramids, 0);
+        this.crown[this.numPyramids - 1].display();
+        this.scene.popMatrix();
+
+        this.scene.popMatrix();
+
+        // Draw shadow
+        this.scene.pushMatrix();
+        this.scene.translate(0, 0.85, 0);
+        this.scene.scale(this.trunkRadius * 6, 1, this.trunkRadius * 6);
+        this.scene.rotate(-Math.PI / 2, 1, 0, 0);
+        this.shadow.display();
         this.scene.popMatrix();
     }
 }
