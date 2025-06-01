@@ -132,3 +132,17 @@ We decided that instead of creating a raging fire in the middle of the forest, w
 #### Water and Fire Images:
 
 <img src="./screenshots/project-t03g02-6.png" width="500">
+
+### Proj-7: Shaders and Animations
+
+In order to create a simple oscillation effect in the fire using shaders, we used a simple sine wave function, that received the time as well as the position y of the vertex, and applied a percentage of that value to the x and z coordinates of the vertex. This created a simple oscillation effect that gives the fire a more dynamic look.
+
+For the helipad blinkers we simply multiplied the current color of the fragment by a sine wave function that oscillates between 0 and 1, creating a blinking effect. This was done using the `gl_FragColor` variable in the fragment shader.
+
+**Additional Notes:**
+
+For both sine functions we used the time variable, but not the one provided by the update function, because the variable t is in clock ticks, and we needed the time in seconds. So we used `performance.now()` to get the current time in milliseconds and divided it by 1000 to get the time in seconds. This allowed for way smoother animations.
+
+#### Shader Image:
+
+<img src="./screenshots/project-t03g02-7.png" width="400">

@@ -102,7 +102,7 @@ export class MyScene extends CGFscene {
     this.displayBuilding = true;
     this.displayForest = false;
     this.displayHelicopter = true;
-    this.displayLake = true;
+    this.displayLake = false;
     this.displayFire = true;
 
     this.lakePositionX = 15;
