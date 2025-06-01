@@ -43,7 +43,7 @@ export class MyScene extends CGFscene {
       this.gl.ONE
     );
 
-    this.setUpdatePeriod(50);
+    this.setUpdatePeriod(25);
 
     // Shaders -----------------------------------------------------
     this.fireShader = new CGFshader(this.gl, "shaders/fire.vert", "shaders/fire.frag");
@@ -102,8 +102,8 @@ export class MyScene extends CGFscene {
     this.displayBuilding = true;
     this.displayForest = false;
     this.displayHelicopter = true;
-    this.displayLake = false;
-    this.displayFire = false;
+    this.displayLake = true;
+    this.displayFire = true;
 
     this.lakePositionX = 15;
     this.lakePositionY = -19.99;

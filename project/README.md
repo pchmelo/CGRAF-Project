@@ -43,6 +43,23 @@ Inside View:
 
 The FireFighters Building was created using three objects of the class MyModule. This class received as parameters the necessary information for the creation of the building, such as the width and length, but also the number of floors, the number of windows per floor, and the color of the module. Finally, it also received a boolean parameter that would determine whether the building was the center module or not. If it was the center module, an additional floor would be added to the building, as well as a door and a heliport on the roof.
 
+**Additional Notes:**
+
+It was at this point we decided to use:
+
+``` js
+this.gl.enable(this.gl.BLEND);
+this.gl.enable(this.gl.BLEND);
+this.gl.blendFuncSeparate(
+    this.gl.SRC_ALPHA,
+    this.gl.ONE_MINUS_SRC_ALPHA,
+    this.gl.ONE,
+    this.gl.ONE
+);
+```
+
+In order to allow transparency in our textures, which will help in the placement of the heliport, as well as the tree shadows, and the fire later on in the project.
+
 #### FireFighters Building Image:
 <img src="./screenshots/project-t03g02-2.png" width="400">
 
@@ -101,3 +118,17 @@ Helicopter Model:
 In Flight:
 
 <img src="./screenshots/project-t03g02-5.png" width="500">
+
+### Proj-6: Water and Fire
+
+The lake was created using MyPlane and giving it the texture of a lake with transparent corners and a dark gradient applied in the center to simulate depth. The Fire is created using multiple of the same MyTriangle used for the trees but with a different texture and a different material.
+
+It was at this point in the project that we also added the feature to fill the helicopter bucket as well as dropping the water on the fire. The fire extinguishing animation was made using a MySemiSphere object to simulate the water being dropped on the fire, and multiple other objects already on the scene being either scaled up or down depending on the state of the fire (fire, water in the bucket, water being dropped).
+
+**Additional Notes:**
+
+We decided that instead of creating a raging fire in the middle of the forest, we used the given creative freedom to instead create an illegal fireplace made by campers during a burn ban next to the lake. This allowed us to place the MyFire object in a fixed position, instead of randomly in the forest, reducing the helicopter travel time, while adding a nice story to our scene.
+
+#### Water and Fire Images:
+
+<img src="./screenshots/project-t03g02-6.png" width="500">
