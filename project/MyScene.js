@@ -99,7 +99,7 @@ export class MyScene extends CGFscene {
     this.displayEarth = false;
     this.displayPlane = true;
     this.displayPanorama = true;
-    this.displayBuilding = false;
+    this.displayBuilding = true;
     this.displayForest = false;
     this.displayHelicopter = false;
     this.displayLake = false;
@@ -125,7 +125,7 @@ export class MyScene extends CGFscene {
       1,  // field of view (fov)
       0.1,
       1000,
-      vec3.fromValues(10, 10, -20),
+      vec3.fromValues(10, 10, 20),
       vec3.fromValues(0, 0, 0)
     );
   }

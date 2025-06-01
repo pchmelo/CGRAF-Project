@@ -38,3 +38,10 @@ Outside View:
 Inside View: 
 
 <img src="./screenshots/project-t03g02-1b.png" width="400">
+
+### Proj-3: FireFighters Building
+
+The FireFighters Building was created using three objects of the class MyModule. This class received as parameters the necessary information for the creation of the building, such as the width and length, but also the number of floors, the number of windows per floor, and the color of the module. Finally, it also received a boolean parameter that would determine whether the building was the center module or not. If it was the center module, an additional floor would be added to the building, as well as a door and a heliport on the roof.
+
+#### FireFighters Building Image:
+<img src="./screenshots/project-t03g02-2.png" width="400">
