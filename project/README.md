@@ -50,7 +50,47 @@ The FireFighters Building was created using three objects of the class MyModule.
 
 The Forest was created following the exact instructions given in the project guide. Some notable features include the use of MyPyramid instead of a six slices MyCone, which allows for a more precise texture coordinate mapping, helping with the shadow textures we applied to different parts of the tree leaves(top leaves, middle leaves, and bottom leaves). We also applied a shadow bellow each tree to help the forest blend in with the ground. For the tree color, we used a method where a random base color was selected and then a random value was added to the RGB values of the base color to create a more natural variation in the tree colors.
 
-**Additional Notes:** In order to populate the scene we used 2 forests that alternated and rotated around the center of the scene. It is important to note that due to a random offset being applied to the tree's position, trees from different MyForest objects may overlap, or the bottom shadow of trees in proximity of each other may have z-fighting issues.
+**Additional Notes:** 
+
+In order to populate the scene we used two forests that alternated and rotated around the center of the scene. It is important to note that due to a random offset being applied to the tree's position, trees from different MyForest objects may overlap, or the bottom shadow of trees in proximity of each other may have z-fighting issues.
 
 #### Forest Image:
 <img src="./screenshots/project-t03g02-3.png" width="600">
+
+### Proj-5: Helicopter
+
+The helicopter was built using the following objects:
+
+- Three `MyEllipsoid` objects for the main body and cockpit;
+- Two `MyCone` objects for the tail;
+- The landing gear was made using `MyCylinder` objects;
+- The two rotors and tail stabilizer were made using four slices `MyCylinder` objects;
+- The bucket was made using a `MySemiSphere` object and the cables were made using `MyCylinder` objects;
+
+The helicopter follows the instructions given in the guide, with the exception of the **S** key, and has the following controls:
+
+- **W**: Accelarate and move forward;
+- **S**: Decelerate and move backward (in the guide it states that it is only supposed to decelerate, but we found that it was more intuitive to also move backward);
+
+****
+- **A**: Rotate left;
+- **D**: Rotate right;
+
+****
+- **P**: Lift off from building (deploy bucket) or lake;
+- **L**: Land on building (retract bucket) or lake; 
+
+****
+- **O**: Open bucket valve and drop water on the fire;
+
+****
+- **R**: Reset the scene;
+
+In regards to the camera position while flying, we decided to have the camera follow both the helicopter's position and rotation, with a slight offset to give a better view of the helicopter sides and bucket, as well as the ground bellow.
+
+**Additional Notes:**
+
+Due to the sheer amount of trees in MyScene, computers that lack the computational power to handle the scene may experience a drop in performance during the flight of the helicopter. If this happens, we recomend turning the forest off using the check box in the GUI, and experimenting with new values for `this.setUpdatePeriod(millis)` in MyScene.
+
+#### Helicopter Image:
+<img src="./screenshots/project-t03g02-4.png" width="400">
