@@ -101,6 +101,9 @@ export class MyScene extends CGFscene {
     this.displayPanorama = true;
     this.displayBuilding = true;
     this.displayForest = true;
+    this.displayHelicopter = true;
+    this.displayLake = true;
+    this.displayFire = true;
 
     this.lakePositionX = 15;
     this.lakePositionY = -19.99;
@@ -476,25 +479,31 @@ export class MyScene extends CGFscene {
     // -------------------------------------------------------------
 
     // Helicopter --------------------------------------------------
+    if (this.displayHelicopter) {
       this.pushMatrix();
       this.helicopter.display();
       this.popMatrix();
+    }
     // -------------------------------------------------------------
 
     // Lake --------------------------------------------------------
+    if (this.displayLake) {
       this.pushMatrix();
       this.translate(this.lakePositionX, this.lakePositionY, this.lakePositionZ);
       this.scale(40, 1, 40);
       this.rotate(-Math.PI / 2, 1, 0, 0);
       this.lake.display();
       this.popMatrix();
+    }
     // -------------------------------------------------------------
 
     // Fireplace ---------------------------------------------------
+    if (this.displayFire) {
       this.pushMatrix();
       this.translate(this.flamePositionX, this.flamePositionY + 1.25, this.flamePositionZ);
       this.fireplace.display();
       this.popMatrix();
+    }
     // -------------------------------------------------------------
 
     // Building ----------------------------------------------------
@@ -508,11 +517,13 @@ export class MyScene extends CGFscene {
     // -------------------------------------------------------------
 
     // Fire --------------------------------------------------------
+    if (this.displayFire) {
       this.pushMatrix();
       this.translate(this.flamePositionX, this.flamePositionY, this.flamePositionZ);
       this.scale(this.flameScaler, this.flameScaler, this.flameScaler);
       this.fire.display();
       this.popMatrix();
+    }
     // -------------------------------------------------------------
   }
 }

@@ -18,11 +18,14 @@ export class MyInterface extends CGFinterface {
         this.gui = new dat.GUI();
 
         this.gui.add(this.scene, 'displayAxis').name('Display Axis');
-        this.gui.add(this.scene, 'displayPlane').name('Display Plane');
         this.gui.add(this.scene, 'displayEarth').name('Display Earth');
+        this.gui.add(this.scene, 'displayPlane').name('Display Plane');
         this.gui.add(this.scene, 'displayPanorama').name('Display Panorama');
         this.gui.add(this.scene, 'displayBuilding').name('Display Building');
         this.gui.add(this.scene, 'displayForest').name('Display Forest');
+        this.gui.add(this.scene, 'displayHelicopter').name('Display Helicopter');
+        this.gui.add(this.scene, 'displayLake').name('Display Lake');
+        this.gui.add(this.scene, 'displayFire').name('Display Fire');
 
         this.gui.add(this.scene, 'speedFactor', 0.1, 3).name('Speed Factor').step(0.1);
 
