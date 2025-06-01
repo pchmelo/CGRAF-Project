@@ -92,5 +92,12 @@ In regards to the camera position while flying, we decided to have the camera fo
 
 Due to the sheer amount of trees in MyScene, computers that lack the computational power to handle the scene may experience a drop in performance during the flight of the helicopter. If this happens, we recomend turning the forest off using the check box in the GUI, and experimenting with new values for `this.setUpdatePeriod(millis)` in MyScene.
 
-#### Helicopter Image:
+#### Helicopter Images:
+
+Helicopter Model:
+
 <img src="./screenshots/project-t03g02-4.png" width="400">
+
+In Flight:
+
+<img src="./screenshots/project-t03g02-5.png" width="500">
