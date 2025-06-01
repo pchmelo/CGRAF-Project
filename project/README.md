@@ -16,3 +16,25 @@ The earth sphere was created using the UV sphere creation algorithm, which is a 
 #### Sphere Image:
 
 <img src="./screenshots/extras/earth_sphere.png" width="400">
+
+### Proj-2: Panorama
+
+We decided to re-use the earth sphere from the first delivery for the panorama. To achieve this we added a boolean parameter to the sphere creation function that would alter the texture coordinates of the sphere to map a panorama image inside the sphere instead of the outside. This allows us to create a panoramic view by applying a texture that wraps around the inside of the sphere, giving the illusion of being inside a large spherical environment.
+
+**Additional Notes:** 
+
+Although the guides mentions that the panorama should follow the three axis of the camera, since following the y axis would break the illusion due to the constant change of the horizon line, we decided to only follow the x and z axes. This way, the panorama will always be aligned with the horizon line, providing a more realistic experience.
+
+We also increased MyPlane's size to 600x600 instead of 400x400. This change was made to increase the amount of space that the helicopter can move around the panorama before the illusion is broken by the helicopter reaching the edge of the plane (out of bounds).
+
+These decisions were backed by our practical lessons professor, who confirmed that these approaches are acceptable for the project.
+
+#### Panorama Images:
+
+Outside View:
+
+<img src="./screenshots/project-t03g02-1a.png" width="400">
+
+Inside View: 
+
+<img src="./screenshots/project-t03g02-1b.png" width="400">

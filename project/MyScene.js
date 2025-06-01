@@ -95,10 +95,10 @@ export class MyScene extends CGFscene {
     // -------------------------------------------------------------
 
     // Auxiliary variables -----------------------------------------
-    this.displayAxis = true;
-    this.displayEarth = true;
-    this.displayPlane = false;
-    this.displayPanorama = false;
+    this.displayAxis = false;
+    this.displayEarth = false;
+    this.displayPlane = true;
+    this.displayPanorama = true;
     this.displayBuilding = false;
     this.displayForest = false;
     this.displayHelicopter = false;
@@ -125,7 +125,7 @@ export class MyScene extends CGFscene {
       1,  // field of view (fov)
       0.1,
       1000,
-      vec3.fromValues(60, 60, 60),
+      vec3.fromValues(10, 10, -20),
       vec3.fromValues(0, 0, 0)
     );
   }
