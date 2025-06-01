@@ -45,3 +45,12 @@ The FireFighters Building was created using three objects of the class MyModule.
 
 #### FireFighters Building Image:
 <img src="./screenshots/project-t03g02-2.png" width="400">
+
+### Proj-4: Forest
+
+The Forest was created following the exact instructions given in the project guide. Some notable features include the use of MyPyramid instead of a six slices MyCone, which allows for a more precise texture coordinate mapping, helping with the shadow textures we applied to different parts of the tree leaves(top leaves, middle leaves, and bottom leaves). We also applied a shadow bellow each tree to help the forest blend in with the ground. For the tree color, we used a method where a random base color was selected and then a random value was added to the RGB values of the base color to create a more natural variation in the tree colors.
+
+**Additional Notes:** In order to populate the scene we used 2 forests that alternated and rotated around the center of the scene. It is important to note that due to a random offset being applied to the tree's position, trees from different MyForest objects may overlap, or the bottom shadow of trees in proximity of each other may have z-fighting issues.
+
+#### Forest Image:
+<img src="./screenshots/project-t03g02-3.png" width="600">
