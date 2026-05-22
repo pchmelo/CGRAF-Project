@@ -1,5 +1,7 @@
 # CG 2024/2025
 
+**Project Live:** https://pchmelo.github.io/CGRAF-Project/project/index.html
+
 **Project Grade:** 19.3/20.0
 
 **Project Vídeo:** https://youtu.be/qWkhAfMNkpI
